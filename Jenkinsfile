@@ -1,22 +1,21 @@
-@Library("mylibs") _
-pipeline {
-  agent any
-  tools {
-    maven 'maven2'
-  }
-  stages{
-    stage("Maven Build"){
-      steps{
-        sh "mvn clean package"
-      }
+@Library("chandulibs") _
+pipeline{
+    agent any
+    stages{
+        stage("git checkout"){
+            steps{
+                git credentialsId: 'github-cred', url: 'https://github.com/chandrakala08/chandhusharedlibs.git'
+                }
+        }
+          stage("Maven Build"){
+            steps{
+                sh 'mvn clean package -DSkipTests=True'
+            }
+        }
+        stage("Dev Tomcat Deploy"){
+                        steps{
+                            tomcatDeploy("172.31.41.206", "ec2-user", "tomcat-dev")
+            }
+        }
     }
-    stage("Deploy To Dev"){
-      steps{
-        tomcatDeploy("tomcat-dev","ec2-user",["172.31.13.89","172.31.13.89"])
-      }
-    }
-  }
 }
-
-
-//testing github hook trigger
